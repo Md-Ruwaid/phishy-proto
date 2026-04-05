@@ -1,0 +1,671 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .app {
+    font-family: 'Syne', sans-serif;
+    background: var(--color-background-tertiary);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .shield-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .logo-text {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-accent {
+    color: #E24B4A;
+  }
+
+  .tagline {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  .card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+  }
+
+  .input-label {
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .url-input {
+    flex: 1;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 10px 14px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .url-input:focus {
+    border-color: var(--color-border-primary);
+    box-shadow: 0 0 0 3px rgba(226, 75, 74, 0.08);
+  }
+
+  .scan-btn {
+    padding: 10px 20px;
+    background: #E24B4A;
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: opacity 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .scan-btn:hover { opacity: 0.88; }
+  .scan-btn:active { transform: scale(0.97); }
+  .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .quick-tests {
+    margin-top: 1rem;
+  }
+
+  .quick-label {
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .quick-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .quick-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 0.5px solid var(--color-border-tertiary);
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .quick-btn:hover {
+    background: var(--color-background-tertiary);
+    color: var(--color-text-primary);
+  }
+
+  .loading-card {
+    display: none;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+  }
+
+  .loading-bar-wrap {
+    background: var(--color-background-secondary);
+    border-radius: 999px;
+    height: 3px;
+    overflow: hidden;
+  }
+
+  .loading-bar {
+    height: 100%;
+    width: 0%;
+    background: #E24B4A;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+
+  .loading-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  .result-card {
+    display: none;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+  }
+
+  .result-header {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+
+  .verdict-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .verdict-icon.phishing {
+    background: #FCEBEB;
+  }
+
+  .verdict-icon.safe {
+    background: #EAF3DE;
+  }
+
+  .verdict-label {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .verdict-label.phishing { color: #E24B4A; }
+  .verdict-label.safe { color: #3B6D11; }
+
+  .verdict-sub {
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+
+  .result-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .result-url {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    word-break: break-all;
+    padding: 8px 12px;
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    margin-bottom: 1rem;
+    border: 0.5px solid var(--color-border-tertiary);
+  }
+
+  .confidence-wrap {
+    margin-bottom: 1rem;
+  }
+
+  .conf-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .conf-label {
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .conf-value {
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .conf-value.phishing { color: #E24B4A; }
+  .conf-value.safe { color: #3B6D11; }
+
+  .conf-bar-bg {
+    height: 6px;
+    background: var(--color-background-secondary);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .conf-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    width: 0%;
+    transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .conf-bar-fill.phishing { background: #E24B4A; }
+  .conf-bar-fill.safe { background: #639922; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 8px;
+    margin-top: 1rem;
+  }
+
+  .feature-chip {
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 8px 10px;
+    text-align: center;
+  }
+
+  .feature-chip-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.2;
+  }
+
+  .feature-chip-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .feature-chip.flag .feature-chip-val {
+    color: #E24B4A;
+  }
+
+  .history-section {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .history-label {
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    padding-left: 2px;
+  }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .history-item {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .history-item:hover {
+    background: var(--color-background-secondary);
+  }
+
+  .history-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .history-dot.phishing { background: #E24B4A; }
+  .history-dot.safe { background: #639922; }
+
+  .history-url {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  .history-verdict {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .history-verdict.phishing { color: #E24B4A; }
+  .history-verdict.safe { color: #3B6D11; }
+
+  .error-card {
+    display: none;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+    background: #FCEBEB;
+    border: 0.5px solid #F09595;
+    border-radius: var(--border-radius-lg);
+    padding: 1rem 1.25rem;
+  }
+
+  .error-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #A32D2D;
+    margin-bottom: 4px;
+  }
+
+  .error-msg {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #791F1F;
+  }
+</style>
+
+<div class="app">
+  <div class="header">
+    <div class="logo-row">
+      <svg class="shield-icon" viewBox="0 0 36 36" fill="none">
+        <path d="M18 3L5 8v10c0 8.284 5.594 16.033 13 18 7.406-1.967 13-9.716 13-18V8L18 3z" fill="#E24B4A" opacity="0.15"/>
+        <path d="M18 3L5 8v10c0 8.284 5.594 16.033 13 18 7.406-1.967 13-9.716 13-18V8L18 3z" stroke="#E24B4A" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M12 18l4 4 8-8" stroke="#E24B4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-text">PHISH<span class="logo-accent">GUARD</span></span>
+    </div>
+    <p class="tagline">// url threat detection system</p>
+  </div>
+
+  <div class="card">
+    <label class="input-label">// scan url</label>
+    <div class="input-row">
+      <input class="url-input" id="urlInput" type="text" placeholder="https://suspicious-bank-login.com/verify" />
+      <button class="scan-btn" id="scanBtn" onclick="runScan()">SCAN</button>
+    </div>
+    <div class="quick-tests">
+      <p class="quick-label">// try these</p>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="prefill('http://paypal-secure-verify-login.com/account')">paypal phish</button>
+        <button class="quick-btn" onclick="prefill('https://google.com')">google</button>
+        <button class="quick-btn" onclick="prefill('http://192.168.1.1/bank-login')">ip address</button>
+        <button class="quick-btn" onclick="prefill('https://github.com/torvalds/linux')">github</button>
+        <button class="quick-btn" onclick="prefill('http://secure-update-password-confirm.net/verify')">fake bank</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-card" id="loadingCard">
+    <div class="loading-bar-wrap">
+      <div class="loading-bar" id="loadingBar"></div>
+    </div>
+    <p class="loading-text" id="loadingText">// analyzing url structure...</p>
+  </div>
+
+  <div class="error-card" id="errorCard">
+    <p class="error-title">connection error</p>
+    <p class="error-msg" id="errorMsg"></p>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <div class="verdict-icon" id="verdictIcon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" id="verdictSvg"></svg>
+      </div>
+      <div>
+        <p class="verdict-label" id="verdictLabel"></p>
+        <p class="verdict-sub" id="verdictSub"></p>
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="result-url" id="resultUrl"></div>
+      <div class="confidence-wrap">
+        <div class="conf-row">
+          <span class="conf-label">// confidence</span>
+          <span class="conf-value" id="confValue"></span>
+        </div>
+        <div class="conf-bar-bg">
+          <div class="conf-bar-fill" id="confBar"></div>
+        </div>
+      </div>
+      <div class="features-grid" id="featuresGrid"></div>
+    </div>
+  </div>
+
+  <div class="history-section" id="historySection" style="display:none;">
+    <p class="history-label">// scan history</p>
+    <div class="history-list" id="historyList"></div>
+  </div>
+</div>
+
+<script>
+const SUSPICIOUS_WORDS = ['login','verify','secure','account','update','bank','confirm','password','credit','signin'];
+const SAFE_DOMAINS = ['google.com','youtube.com','facebook.com','microsoft.com','apple.com','github.com'];
+const loadingMsgs = ['// analyzing url structure...','// extracting features...','// running random forest...','// computing threat score...'];
+let scanHistory = [];
+
+function prefill(url) {
+  document.getElementById('urlInput').value = url;
+  document.getElementById('urlInput').focus();
+}
+
+function extractFeatures(url) {
+  let parsed;
+  try { parsed = new URL(url); } catch(e) { parsed = { protocol: '', hostname: '', pathname: url }; }
+  const domain = parsed.hostname || '';
+  const dots = (url.match(/\./g) || []).length;
+  const hyphens = (url.match(/-/g) || []).length;
+  const slashes = (url.match(/\//g) || []).length;
+  const hasIp = /^\d+\.\d+\.\d+\.\d+/.test(domain);
+  const suspCount = SUSPICIOUS_WORDS.filter(w => url.toLowerCase().includes(w)).length;
+  const isSafe = SAFE_DOMAINS.some(s => domain.includes(s));
+  return {
+    'url_length': url.length,
+    'has_https': parsed.protocol === 'https:' ? 1 : 0,
+    'has_at': url.includes('@') ? 1 : 0,
+    'num_dots': dots,
+    'num_hyphens': hyphens,
+    'num_slashes': slashes,
+    'has_ip': hasIp ? 1 : 0,
+    'suspicious_words': suspCount,
+    'safe_domain': isSafe ? 1 : 0,
+  };
+}
+
+function localPredict(url) {
+  const f = extractFeatures(url);
+  let score = 0;
+  if (f.url_length > 75) score += 20;
+  if (f.url_length > 100) score += 15;
+  if (f.has_https === 0) score += 15;
+  if (f.has_at) score += 25;
+  if (f.num_dots > 4) score += 10;
+  if (f.num_hyphens > 3) score += 15;
+  if (f.has_ip) score += 30;
+  score += f.suspicious_words * 15;
+  if (f.safe_domain) score = Math.max(0, score - 40);
+  const confidence = Math.min(98, Math.max(52, score > 40 ? 60 + score * 0.3 : 90 - score * 0.6));
+  const isPhishing = score > 40;
+  return {
+    is_phishing: isPhishing,
+    confidence: parseFloat(confidence.toFixed(1)),
+    verdict: isPhishing ? 'Phishing Detected' : 'Safe',
+    features: f
+  };
+}
+
+function renderFeatures(features, isPhishing) {
+  const labels = {
+    'url_length': ['LEN', v => v, v => isPhishing && v > 75],
+    'has_https': ['HTTPS', v => v ? 'YES' : 'NO', v => !v],
+    'has_at': ['@ SYMBOL', v => v ? 'YES' : 'NO', v => v],
+    'num_dots': ['DOTS', v => v, v => v > 4],
+    'num_hyphens': ['HYPHENS', v => v, v => v > 3],
+    'suspicious_words': ['KEYWORDS', v => v, v => v > 0],
+    'has_ip': ['IP ADDR', v => v ? 'YES' : 'NO', v => v],
+    'safe_domain': ['KNOWN SAFE', v => v ? 'YES' : 'NO', () => false],
+  };
+  const grid = document.getElementById('featuresGrid');
+  grid.innerHTML = '';
+  Object.entries(labels).forEach(([key, [label, fmt, isFlag]]) => {
+    if (features[key] === undefined) return;
+    const val = features[key];
+    const flagged = isFlag(val);
+    const chip = document.createElement('div');
+    chip.className = 'feature-chip' + (flagged ? ' flag' : '');
+    chip.innerHTML = `<div class="feature-chip-val">${fmt(val)}</div><div class="feature-chip-name">${label}</div>`;
+    grid.appendChild(chip);
+  });
+}
+
+async function runScan() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) return;
+
+  const btn = document.getElementById('scanBtn');
+  btn.disabled = true;
+  document.getElementById('resultCard').style.display = 'none';
+  document.getElementById('errorCard').style.display = 'none';
+  document.getElementById('loadingCard').style.display = 'block';
+
+  const bar = document.getElementById('loadingBar');
+  const txt = document.getElementById('loadingText');
+  let step = 0;
+  bar.style.width = '15%';
+  const interval = setInterval(() => {
+    step++;
+    if (step < loadingMsgs.length) {
+      txt.textContent = loadingMsgs[step];
+      bar.style.width = (15 + step * 22) + '%';
+    }
+  }, 300);
+
+  await new Promise(r => setTimeout(r, 1200));
+  clearInterval(interval);
+  bar.style.width = '100%';
+  await new Promise(r => setTimeout(r, 200));
+
+  let result;
+  try {
+    const resp = await fetch('/api/detect/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    if (resp.ok) {
+      result = await resp.json();
+      result.features = extractFeatures(url);
+    } else {
+      result = localPredict(url);
+    }
+  } catch(e) {
+    result = localPredict(url);
+  }
+
+  document.getElementById('loadingCard').style.display = 'none';
+  btn.disabled = false;
+
+  const isPhishing = result.is_phishing;
+  const cls = isPhishing ? 'phishing' : 'safe';
+
+  const icon = document.getElementById('verdictIcon');
+  const svg = document.getElementById('verdictSvg');
+  icon.className = 'verdict-icon ' + cls;
+  if (isPhishing) {
+    svg.innerHTML = '<path d="M11 4L2 19h18L11 4z" stroke="#E24B4A" stroke-width="1.5" stroke-linejoin="round" fill="none"/><line x1="11" y1="9" x2="11" y2="14" stroke="#E24B4A" stroke-width="1.5" stroke-linecap="round"/><circle cx="11" cy="17" r="0.8" fill="#E24B4A"/>';
+  } else {
+    svg.innerHTML = '<path d="M5 11l4 4 8-8" stroke="#639922" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
+
+  document.getElementById('verdictLabel').textContent = result.verdict;
+  document.getElementById('verdictLabel').className = 'verdict-label ' + cls;
+  document.getElementById('verdictSub').textContent = isPhishing ? '// threat detected — do not visit' : '// url appears legitimate';
+  document.getElementById('resultUrl').textContent = url;
+
+  const confEl = document.getElementById('confValue');
+  confEl.textContent = result.confidence + '%';
+  confEl.className = 'conf-value ' + cls;
+
+  const confBar = document.getElementById('confBar');
+  confBar.className = 'conf-bar-fill ' + cls;
+  setTimeout(() => { confBar.style.width = result.confidence + '%'; }, 50);
+
+  if (result.features) renderFeatures(result.features, isPhishing);
+
+  document.getElementById('resultCard').style.display = 'block';
+
+  scanHistory.unshift({ url, verdict: result.verdict, isPhishing });
+  if (scanHistory.length > 5) scanHistory.pop();
+  renderHistory();
+}
+
+function renderHistory() {
+  const section = document.getElementById('historySection');
+  const list = document.getElementById('historyList');
+  if (scanHistory.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = '';
+  scanHistory.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'history-item';
+    const cls = item.isPhishing ? 'phishing' : 'safe';
+    el.innerHTML = `<div class="history-dot ${cls}"></div><span class="history-url">${item.url}</span><span class="history-verdict ${cls}">${item.verdict}</span>`;
+    el.onclick = () => prefill(item.url);
+    list.appendChild(el);
+  });
+}
+
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runScan();
+});
+</script>
